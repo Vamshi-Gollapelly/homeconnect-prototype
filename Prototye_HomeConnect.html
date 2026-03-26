@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HomeConnect - Organised Prototype</title>
+  <style>
+    :root{
+      --bg:#f4f8fc;
+      --surface:#ffffff;
+      --surface-2:#f8fbfe;
+      --text:#17324a;
+      --muted:#607688;
+      --primary:#1976d2;
+      --primary-dark:#0f4f92;
+      --accent:#f9a825;
+      --success:#2e7d32;
+      --danger:#d32f2f;
+      --border:#d8e5f0;
+      --shadow:0 18px 40px rgba(19,49,79,.08);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f7fbff,#eef5fb);color:var(--text)}
+    .container{width:min(1300px,calc(100% - 28px));margin:0 auto}
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start;padding:20px 0 40px}
+    .sidebar{position:sticky;top:14px;background:var(--surface);border:1px solid var(--border);border-radius:28px;padding:16px;box-shadow:var(--shadow)}
+    .brand{display:flex;gap:12px;align-items:center;padding:8px 8px 16px;border-bottom:1px solid #edf3f8}
+    .brand-icon{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#0e2740,#1976d2);color:#fff;font-size:23px}
+    .brand h1{margin:0;font-size:22px}
+    .brand p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+    .nav{display:grid;gap:8px;padding-top:14px}
+    .nav button{border:none;background:#fff;padding:12px 14px;border-radius:16px;text-align:left;color:var(--text);font-weight:700;cursor:pointer;border:1px solid transparent}
+    .nav button.active,.nav button:hover{background:var(--surface-2);border-color:var(--border)}
+    .content{display:grid;gap:18px}
+    .hero{background:linear-gradient(135deg,#0d2237 0%,#114a87 55%,#1c84d6 100%);color:#fff;border-radius:34px;padding:28px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+    .hero:after{content:'';position:absolute;right:-70px;top:-70px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.08)}
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.12);font-size:13px}
+    .hero h2{margin:14px 0 0;font-size:clamp(32px,5vw,52px);line-height:1.08}
+    .hero p{margin:16px 0 0;color:rgba(255,255,255,.88);line-height:1.8}
+    .chip-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .chip,.chip-dark{display:inline-flex;padding:9px 13px;border-radius:999px;font-size:12px;font-weight:700}
+    .chip-dark{background:rgba(255,255,255,.12);color:#fff}
+    .hero-cards{display:grid;gap:12px}
+    .hero-card{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:16px}
+    .hero-card h3{margin:8px 0 6px;font-size:18px}.hero-card p{margin:0;font-size:14px}
+    .section{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:22px;box-shadow:var(--shadow)}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    .section-head h3{margin:0;font-size:28px}.section-head p{margin:8px 0 0;color:var(--muted);line-height:1.8;max-width:900px}
+    .pill{display:inline-flex;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700;background:var(--surface-2);color:var(--primary-dark)}
+    .grid-2,.grid-3,.grid-4,.detail-grid,.flow-grid{display:grid;gap:14px}
+    .grid-2{grid-template-columns:repeat(2,1fr)} .grid-3{grid-template-columns:repeat(3,1fr)} .grid-4{grid-template-columns:repeat(4,1fr)}
+    .detail-grid{grid-template-columns:1fr 1fr}.flow-grid{grid-template-columns:.9fr 1.1fr}
+    .card{background:var(--surface-2);border:1px solid var(--border);border-radius:22px;padding:16px}
+    .card h4{margin:0 0 10px;font-size:18px}.card p{margin:0;color:var(--muted);line-height:1.75;font-size:14px}
+    .core-box{background:linear-gradient(135deg,#f7fbff,#eff6fc);border:1px solid var(--border);border-radius:24px;padding:18px}
+    .core-box strong{display:block;font-size:18px;margin-bottom:8px}
+    .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .service-card{border:1px solid var(--border);background:#fff;border-radius:24px;padding:16px;cursor:pointer;transition:.25s ease;position:relative}
+    .service-card:hover,.service-card.active{transform:translateY(-3px);box-shadow:0 16px 30px rgba(25,118,210,.10);border-color:#bcd6ec}
+    .service-icon{width:50px;height:50px;border-radius:16px;color:#fff;display:grid;place-items:center;font-size:24px}
+    .g1{background:linear-gradient(135deg,#1976d2,#00acc1)} .g2{background:linear-gradient(135deg,#6a1b9a,#3949ab)} .g3{background:linear-gradient(135deg,#2e7d32,#7cb342)}
+    .g4{background:linear-gradient(135deg,#ef6c00,#f9a825)} .g5{background:linear-gradient(135deg,#1565c0,#42a5f5)} .g6{background:linear-gradient(135deg,#ad1457,#ff4081)}
+    .g7{background:linear-gradient(135deg,#0f766e,#14b8a6)} .g8{background:linear-gradient(135deg,#374151,#111827)} .g9{background:linear-gradient(135deg,#b45309,#f59e0b)}
+    .service-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
+    .mini-label{padding:7px 10px;border-radius:999px;background:var(--surface-2);font-size:11px;font-weight:700;color:var(--primary-dark)}
+    .service-card h4{margin:14px 0 6px;font-size:18px}
+    .service-card p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+    .flow-map{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+    .flow-node{background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:14px;text-align:center;font-size:13px;font-weight:700;line-height:1.6}
+    .list{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+    .list li{background:var(--surface-2);border:1px solid var(--border);padding:12px 14px;border-radius:18px;font-size:14px;color:var(--muted);line-height:1.7}
+    .steps{display:grid;gap:10px;margin-top:12px}.step{display:flex;gap:12px;background:#fff;border:1px solid var(--border);border-radius:16px;padding:12px 14px;color:var(--muted);line-height:1.7;font-size:14px}
+    .step-num{min-width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+    .phone{width:min(360px,100%);margin:0 auto;background:#08131f;border-radius:42px;padding:10px;box-shadow:0 22px 48px rgba(10,30,50,.18)}
+    .phone-top{height:26px;background:#08131f;display:flex;justify-content:center;align-items:end}.phone-notch{width:110px;height:6px;background:#1d2d3a;border-radius:999px;margin-bottom:6px}
+    .phone-inner{background:#fff;border-radius:34px;overflow:hidden;min-height:700px}
+    .screen{display:none}.screen.active{display:block;animation:fade .25s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .app-head{padding:22px 20px 16px;border-bottom:1px solid #edf2f7}.app-head small{color:var(--muted);font-size:12px}.app-head h4{margin:6px 0 0;font-size:22px}.app-head p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+    .screen-body{padding:18px 20px 22px}.welcome{min-height:700px;background:linear-gradient(135deg,#0d2237,#114a87 55%,#1c84d6);color:#fff;padding:20px;display:flex;flex-direction:column}.welcome h4{font-size:34px;line-height:1.12;margin:18px 0 12px}.welcome p{color:rgba(255,255,255,.88);line-height:1.8}
+    .cta,.cta-outline{width:100%;padding:14px 16px;border-radius:18px;border:none;font-size:15px;font-weight:700;cursor:pointer}.cta{background:#fff;color:#0d2237}.cta-outline{margin-top:10px;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.20)}
+    .banner{padding:16px;border-radius:24px;background:linear-gradient(135deg,#12314f,#0e548f);color:#fff;margin-bottom:14px}
+    .searchbar{border:1px solid var(--border);background:#fff;border-radius:16px;padding:13px 14px;color:var(--muted);font-size:14px}
+    .small-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}.small-card{border-radius:20px;padding:14px;border:1px solid var(--border);background:#fff}.small-card.active{background:#0f2439;color:#fff;border-color:#0f2439}.small-card h5{margin:10px 0 4px;font-size:15px}.small-card p{margin:0;font-size:12px;line-height:1.6;opacity:.9;color:inherit}
+    .icon-mini{width:42px;height:42px;border-radius:14px;color:#fff;display:grid;place-items:center;font-size:20px}
+    .box{border:1px solid var(--border);background:#fff;border-radius:22px;padding:16px}.box h5{margin:0 0 10px;font-size:17px}.helper-card{border:1px solid var(--border);border-radius:22px;padding:14px;background:#fff;margin-bottom:12px}.helper-top{display:flex;justify-content:space-between;gap:10px;align-items:start}.eta{padding:7px 10px;border-radius:999px;background:#e8f5e9;color:var(--success);font-size:12px;font-weight:700;white-space:nowrap}
+    .map-box{border-radius:24px;min-height:230px;background:linear-gradient(135deg,#dff3ff,#f4fbff);border:1px solid #bee0f6;position:relative;overflow:hidden;padding:16px}.road{position:absolute;height:6px;background:rgba(25,118,210,.2);border-radius:999px}.pin,.car{position:absolute;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:#fff;font-size:20px;box-shadow:0 12px 24px rgba(18,68,110,.12)}.pin{background:#0f2439;left:34px;bottom:26px}.car{background:#19a974;right:56px;top:54px}
+    .tracker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.tracker-item{text-align:center;padding:13px 10px;border-radius:18px;border:1px solid var(--border);background:#f9fbfe;font-size:13px;font-weight:700}.danger{background:#fff1f1;border-color:#ffd0d0;color:var(--danger)}
+    .feature-group{display:grid;gap:12px}.feature-row{display:flex;justify-content:space-between;gap:10px;align-items:start;padding:14px;border:1px solid var(--border);border-radius:18px;background:var(--surface-2)}.feature-row strong{display:block;font-size:15px;margin-bottom:4px}.feature-row span{font-size:13px;color:var(--muted);line-height:1.6}
+    .open-btn{border:none;background:var(--text);color:#fff;padding:10px 14px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+    .modal{position:fixed;inset:0;background:rgba(8,19,31,.45);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}.modal-card{width:min(920px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:28px;box-shadow:0 28px 60px rgba(8,19,31,.22)}
+    .modal-head{padding:22px 24px;border-bottom:1px solid #edf2f7;display:flex;justify-content:space-between;gap:14px;align-items:start}.modal-head h4{margin:0;font-size:28px}.modal-head p{margin:8px 0 0;color:var(--muted);line-height:1.7}.close{border:none;background:var(--surface-2);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px}
+    .modal-body{padding:22px 24px;display:grid;grid-template-columns:1fr 1fr;gap:18px}.subbox{background:var(--surface-2);border:1px solid var(--border);border-radius:22px;padding:16px}.subbox h5{margin:0 0 12px;font-size:18px}
+    @media (max-width:1080px){.layout{grid-template-columns:1fr}.sidebar{position:relative;top:0}.hero-grid,.detail-grid,.flow-grid,.grid-3,.grid-4,.service-grid,.modal-body{grid-template-columns:1fr}.flow-map{grid-template-columns:1fr}}
+    @media (max-width:680px){.container{width:min(100% - 18px,1300px)}.section,.hero{padding:18px}.section-head h3{font-size:24px}.small-grid,.grid-2,.tracker-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-icon">🏠</div>
+          <div>
+            <h1>HomeConnect</h1>
+            <p>Structured prototype based on the full concept document.</p>
+          </div>
+        </div>
+        <div class="nav">
+          <button class="nav-btn active" data-target="hero">Overview</button>
+          <button class="nav-btn" data-target="core-idea">Core Idea</button>
+          <button class="nav-btn" data-target="ecosystem">Service Ecosystem</button>
+          <button class="nav-btn" data-target="flows">User Flows</button>
+          <button class="nav-btn" data-target="prototype">Prototype</button>
+          <button class="nav-btn" data-target="features">Key Features</button>
+          <button class="nav-btn" data-target="trust">Trust & Safety</button>
+          <button class="nav-btn" data-target="admin">Admin & Control</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="hero" id="hero">
+          <div class="hero-grid">
+            <div>
+              <div class="eyebrow">✨ Complete settlement support ecosystem</div>
+              <h2>Not just an app. A guided platform for the whole newcomer journey.</h2>
+              <p>
+                HomeConnect is designed to help international students, visa holders, and first-time arrivals handle the most difficult first days in a new country. It brings together transport, temporary stay, groceries, SIM setup, bank guidance, local orientation, trust checks, real-time support, and protected payments in one organised product flow.
+              </p>
+              <div class="chip-row">
+                <span class="chip-dark">Airport pickup</span>
+                <span class="chip-dark">Temporary stay</span>
+                <span class="chip-dark">Grocery starter kits</span>
+                <span class="chip-dark">SIM setup</span>
+                <span class="chip-dark">Bank & Medicare help</span>
+                <span class="chip-dark">City orientation</span>
+              </div>
+            </div>
+            <div class="hero-cards">
+              <div class="hero-card"><h3>Problem</h3><p>New arrivals face many urgent tasks at once and currently rely on disconnected apps or unreliable informal help.</p></div>
+              <div class="hero-card"><h3>Response</h3><p>HomeConnect connects services, guidance, trust, and real-time support in one platform.</p></div>
+              <div class="hero-card"><h3>Stakeholder Value</h3><p>It blends Uber-style coordination, Airbnb-style trust, and wallet-based transaction control into a practical ecosystem.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="core-idea">
+          <div class="section-head">
+            <div>
+              <h3>Core idea and platform logic</h3>
+              <p>This section clearly shows what HomeConnect really is, so the prototype does not feel like random features.</p>
+            </div>
+            <span class="pill">Core product meaning</span>
+          </div>
+          <div class="grid-3">
+            <div class="core-box">
+              <strong>One journey, not many disconnected tools</strong>
+              <div style="color:var(--muted);line-height:1.8;font-size:14px;">A user should not move between transport apps, housing apps, payment tools, and informal contacts. HomeConnect keeps the whole first-mile settlement process inside one structured experience.</div>
+            </div>
+            <div class="core-box">
+              <strong>Support from arrival to stability</strong>
+              <div style="color:var(--muted);line-height:1.8;font-size:14px;">The app is designed to support what the user needs first, next, and later. It follows the real order of settlement needs instead of showing isolated service menus.</div>
+            </div>
+            <div class="core-box">
+              <strong>Trust-led operations</strong>
+              <div style="color:var(--muted);line-height:1.8;font-size:14px;">The platform is built around verification, ratings, live tracking, support escalation, and protected payments so the service feels dependable in real life.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="ecosystem">
+          <div class="section-head">
+            <div>
+              <h3>Full service ecosystem</h3>
+              <p>Click any service to open a detailed flow. The idea is to show what happens inside that feature, not just its name.</p>
+            </div>
+            <span class="pill" id="selected-service">Airport Pickup</span>
+          </div>
+          <div class="service-grid" id="service-grid"></div>
+        </section>
+
+        <section class="section" id="flows">
+          <div class="section-head">
+            <div>
+              <h3>Clear user flows</h3>
+              <p>These flows explain how different users move through the system.</p>
+            </div>
+            <span class="pill">Operational clarity</span>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <h4>Main newcomer flow</h4>
+              <div class="flow-map">
+                <div class="flow-node">Open App & Choose Language</div>
+                <div class="flow-node">Sign Up / Login</div>
+                <div class="flow-node">Select Role</div>
+                <div class="flow-node">See Priority Dashboard</div>
+                <div class="flow-node">Choose Service</div>
+                <div class="flow-node">Match & Track Helper</div>
+                <div class="flow-node">Complete, Pay, Review</div>
+              </div>
+            </div>
+            <div class="card">
+              <h4>Helper flow</h4>
+              <ul class="list">
+                <li>Helper signs up and uploads ID, visa or residency proof, and other required checks.</li>
+                <li>Admin reviews documents and approves trusted helpers.</li>
+                <li>Helper receives matched tasks based on location, language, and service category.</li>
+                <li>Helper performs service, completes the task, and receives payout through the wallet flow.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="prototype">
+          <div class="section-head">
+            <div>
+              <h3>Interactive prototype screens</h3>
+              <p>The screens below present the product as an organised mobile experience. Use the buttons to switch through the main app flow.</p>
+            </div>
+            <div class="chip-row" id="screen-tabs"></div>
+          </div>
+          <div class="flow-grid">
+            <div>
+              <div class="card" style="margin-bottom:14px;">
+                <h4 id="screen-title-side">Welcome / Entry</h4>
+                <p id="screen-note-side">A clear first step where the platform explains what it does and lets users choose their role.</p>
+              </div>
+              <div class="card" style="margin-bottom:14px;">
+                <h4>What this prototype now shows</h4>
+                <ul class="list">
+                  <li>HomeConnect is organised around a clear settlement journey.</li>
+                  <li>Services can be opened individually to view their internal flow.</li>
+                  <li>The mobile experience is split into logical screens instead of one confusing block.</li>
+                  <li>Trust, payment, support, and control features are visible across the journey.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h4>Prototype strengths</h4>
+                <div class="grid-2">
+                  <div class="card"><h4 style="font-size:16px">Guided Dashboard</h4><p>The dashboard prioritises what the user most likely needs first.</p></div>
+                  <div class="card"><h4 style="font-size:16px">Real-Time Tracking</h4><p>The tracking view makes the product feel live and operational.</p></div>
+                  <div class="card"><h4 style="font-size:16px">Wallet Closure</h4><p>The completion flow makes transaction logic clear and safe.</p></div>
+                  <div class="card"><h4 style="font-size:16px">Role-Based Entry</h4><p>The app supports both newcomers and helpers from the start.</p></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="phone">
+                <div class="phone-top"><div class="phone-notch"></div></div>
+                <div class="phone-inner">
+                  <div class="screen active" id="screen-welcome">
+                    <div class="welcome">
+                      <div class="eyebrow">🌍 Trusted settlement platform</div>
+                      <h4>Settle into a new country with less stress and more clarity.</h4>
+                      <p>HomeConnect supports airport pickup, stay, groceries, SIM setup, onboarding help, and local orientation in one place.</p>
+                      <div style="margin-top:22px;">
+                        <button class="cta">I’m a newcomer</button>
+                        <button class="cta-outline">I want to help and earn</button>
+                      </div>
+                      <div class="chip-row" style="margin-top:auto;padding-top:20px;">
+                        <span class="chip-dark">Multi-language onboarding</span>
+                        <span class="chip-dark">Verified helpers</span>
+                        <span class="chip-dark">Live support</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="screen" id="screen-dashboard">
+                    <div class="app-head"><small>HomeConnect</small><h4>Good evening, Vamshi</h4><p>What do you need first after arrival?</p></div>
+                    <div class="screen-body">
+                      <div class="banner"><strong>Recommended next step</strong><div style="font-size:20px;font-weight:800;margin-top:8px;">Airport pickup for Tullamarine</div><div style="font-size:14px;line-height:1.75;margin-top:8px;opacity:.92;">Your flight lands at 8:10 PM. Book a verified helper and track them live.</div></div>
+                      <div class="searchbar">🔎 Search a service, helper, or area</div>
+                      <div class="small-grid">
+                        <div class="small-card active"><div class="icon-mini g1">✈️</div><h5>Airport Pickup</h5><p>Safe arrival support</p></div>
+                        <div class="small-card"><div class="icon-mini g2">🏠</div><h5>Temporary Stay</h5><p>Verified short-term housing</p></div>
+                        <div class="small-card"><div class="icon-mini g3">🛍️</div><h5>Starter Groceries</h5><p>Day-one essentials</p></div>
+                        <div class="small-card"><div class="icon-mini g4">📱</div><h5>SIM Support</h5><p>Local connectivity help</p></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="screen" id="screen-booking">
+                    <div class="app-head"><small>Booking Flow</small><h4>Airport Pickup</h4><p>Complete your booking in simple steps</p></div>
+                    <div class="screen-body">
+                      <div class="box" style="margin-bottom:14px"><h5>Booking details</h5><div class="grid-2"><div class="box"><strong>28 Mar 2026</strong><div style="font-size:12px;color:var(--muted);margin-top:4px">Date</div></div><div class="box"><strong>8:15 PM</strong><div style="font-size:12px;color:var(--muted);margin-top:4px">Time</div></div></div><div class="box" style="margin-top:12px"><strong>Melbourne Tullamarine Airport</strong><div style="font-size:12px;color:var(--muted);margin-top:4px">Pickup location</div></div></div>
+                      <h5 style="margin:0 0 10px">Matched helpers</h5>
+                      <div class="helper-card"><div class="helper-top"><div><strong>Priya N.</strong><div style="color:var(--muted);font-size:13px;margin-top:4px">Hindi · Telugu · Airport pickup</div><div style="font-size:12px;color:var(--muted);margin-top:6px">⭐ 4.9 · 58 tasks</div></div><div class="eta">12 min away</div></div></div>
+                      <div class="helper-card"><div class="helper-top"><div><strong>Liam T.</strong><div style="color:var(--muted);font-size:13px;margin-top:4px">Mandarin · Orientation · Stay</div><div style="font-size:12px;color:var(--muted);margin-top:6px">⭐ 4.8 · 41 tasks</div></div><div class="eta">18 min away</div></div></div>
+                      <button class="cta" style="background:var(--text);color:#fff;margin-top:4px">Confirm selected helper</button>
+                    </div>
+                  </div>
+
+                  <div class="screen" id="screen-tracking">
+                    <div class="app-head"><small>Live Support</small><h4>Helper is on the way</h4><p>Track the task and stay informed in real time</p></div>
+                    <div class="screen-body">
+                      <div class="map-box">
+                        <div class="road" style="left:24px;right:32px;top:56px;transform:rotate(6deg)"></div>
+                        <div class="road" style="left:42px;right:20px;top:130px;transform:rotate(-7deg)"></div>
+                        <div class="road" style="left:28px;right:52px;bottom:64px;transform:rotate(4deg)"></div>
+                        <div style="position:relative;z-index:2;max-width:210px"><div style="font-size:14px;color:var(--muted)">Current trip stage</div><div style="font-size:22px;font-weight:800;margin-top:8px">Heading to Terminal 2</div><div style="font-size:14px;color:var(--muted);line-height:1.7;margin-top:8px">ETA 12 minutes · Vehicle verified · Chat enabled</div></div>
+                        <div class="pin">📍</div>
+                        <div class="car">🚗</div>
+                      </div>
+                      <div class="tracker-grid"><div class="tracker-item">⏱️ ETA 12 min</div><div class="tracker-item">💬 Chat</div><div class="tracker-item danger">⚠️ SOS</div></div>
+                      <div class="box"><h5>Live updates</h5><ul class="list"><li>Booking confirmed successfully.</li><li>Helper is moving toward your terminal.</li><li>Support team is available throughout the task.</li></ul></div>
+                    </div>
+                  </div>
+
+                  <div class="screen" id="screen-wallet">
+                    <div class="app-head"><small>Wallet & Completion</small><h4>Protected transaction flow</h4><p>Transparent payment and service closure</p></div>
+                    <div class="screen-body">
+                      <div class="banner" style="background:linear-gradient(135deg,#0f2439,#1f4263)"><div style="font-size:12px;opacity:.85">Protected payment</div><div style="font-size:34px;font-weight:900;margin-top:6px">A$45.00</div><div style="font-size:14px;line-height:1.75;margin-top:6px;opacity:.92">Funds are held safely and released only after service completion.</div></div>
+                      <div class="box"><h5>Completion flow</h5><ul class="list"><li>Booking payment captured securely.</li><li>Funds are held during service.</li><li>User confirms completion after safe delivery.</li><li>Review, rating, and issue reporting stay available.</li></ul></div>
+                      <div class="grid-2" style="margin-top:14px"><button class="cta" style="background:#fff;color:var(--text);border:1px solid var(--border)">Raise issue</button><button class="cta" style="background:var(--text);color:#fff">Confirm completion</button></div>
+                    </div>
+                  </div>
+
+                  <div class="screen" id="screen-helper">
+                    <div class="app-head"><small>Helper Journey</small><h4>Work, trust, and earnings</h4><p>How helpers join the ecosystem and deliver value</p></div>
+                    <div class="screen-body">
+                      <div class="box"><h5>Onboarding flow</h5><div class="steps"><div class="step"><div class="step-num">1</div><div>Sign up and upload ID, residency proof, and required checks.</div></div><div class="step"><div class="step-num">2</div><div>Get verified by the platform and receive approval.</div></div><div class="step"><div class="step-num">3</div><div>Accept matched tasks based on language, location, and service type.</div></div><div class="step"><div class="step-num">4</div><div>Complete tasks, earn through the wallet, and build ratings.</div></div></div></div>
+                    </div>
+                  </div>
+
+                  <div class="screen" id="screen-admin">
+                    <div class="app-head"><small>Admin Control</small><h4>Operational oversight</h4><p>How the platform remains safe and scalable</p></div>
+                    <div class="screen-body">
+                      <div class="feature-group">
+                        <div class="feature-row"><div><strong>User management</strong><span>Search, verify, suspend, and monitor newcomers and helpers.</span></div></div>
+                        <div class="feature-row"><div><strong>Verification queue</strong><span>Approve or reject helper documents and track reliability.</span></div></div>
+                        <div class="feature-row"><div><strong>Booking supervision</strong><span>Watch live tasks, manage delays, and reassign urgent cases.</span></div></div>
+                        <div class="feature-row"><div><strong>Disputes and refunds</strong><span>Resolve issues fairly and control payment release when needed.</span></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="features">
+          <div class="section-head">
+            <div>
+              <h3>Important platform features</h3>
+              <p>Click any feature to open a detailed explanation and flow.</p>
+            </div>
+            <span class="pill">Feature-level clarity</span>
+          </div>
+          <div class="grid-2" id="feature-list"></div>
+        </section>
+
+        <section class="section" id="trust">
+          <div class="section-head">
+            <div>
+              <h3>Trust and safety model</h3>
+              <p>These are the controls that make the product feel real, reliable, and acceptable to users and stakeholders.</p>
+            </div>
+            <span class="pill">Acceptance drivers</span>
+          </div>
+          <div class="grid-2">
+            <div class="card"><h4>For newcomers</h4><ul class="list"><li>Verified helper identities and visible badges.</li><li>Ratings, reviews, and task history.</li><li>Live tracking, chat support, and SOS access during active tasks.</li><li>Clear prices and protected payment completion.</li></ul></div>
+            <div class="card"><h4>For platform control</h4><ul class="list"><li>Admin visibility across bookings and disputes.</li><li>Document verification and operational moderation.</li><li>Refund handling, quality management, and safety escalation.</li><li>Structured transaction release through the wallet flow.</li></ul></div>
+          </div>
+        </section>
+
+        <section class="section" id="admin">
+          <div class="section-head">
+            <div>
+              <h3>Admin and control layer</h3>
+              <p>The platform is not only user-facing. It also needs a strong operational layer to keep trust, safety, and quality under control.</p>
+            </div>
+            <span class="pill">Back-office logic</span>
+          </div>
+          <div class="grid-4">
+            <div class="card"><h4>User Management</h4><p>Approve, suspend, or manage users and helpers.</p></div>
+            <div class="card"><h4>Booking Supervision</h4><p>Monitor ongoing tasks and manage issues in real time.</p></div>
+            <div class="card"><h4>Verification Queue</h4><p>Check helper documents and trust eligibility.</p></div>
+            <div class="card"><h4>Analytics</h4><p>Track service use, helper performance, and operational activity.</p></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal" id="detail-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <h4 id="modal-title">Feature</h4>
+          <p id="modal-desc">Description</p>
+        </div>
+        <button class="close" id="close-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="subbox">
+          <h5>Flow</h5>
+          <div class="steps" id="modal-steps"></div>
+        </div>
+        <div class="subbox">
+          <h5>Why it matters</h5>
+          <ul class="list" id="modal-points"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const services = [
+      {id:'pickup',title:'Airport Pickup',icon:'✈️',iconClass:'g1',label:'Arrival',desc:'Meet a verified helper at the airport and travel safely to your first destination.',steps:['Enter flight details and arrival terminal.','View matched helpers based on language, availability, and ratings.','Confirm the booking and receive live updates.','Track the helper and complete the trip safely.'],points:['Reduces stress at first arrival.','Supports safety through verification and live tracking.','Fits naturally as the first service in the newcomer journey.']},
+      {id:'stay',title:'Temporary Stay',icon:'🏠',iconClass:'g2',label:'Stay',desc:'Browse trusted short-term accommodation near airport, city, or university areas.',steps:['Select dates and preferred area.','Compare verified properties or local hosts.','Review pricing, amenities, and trust information.','Reserve securely and receive check-in details.'],points:['Helps users avoid unsafe or low-quality first stays.','Connects location convenience with trust signals.','Supports smoother transition into a stable living setup.']},
+      {id:'groceries',title:'Starter Grocery Kit',icon:'🛍️',iconClass:'g3',label:'Essentials',desc:'Have first-day food and basic home items delivered when you arrive.',steps:['Choose a predefined starter pack or build your own.','Set the drop-off address and delivery time.','Track the order in real time.','Confirm delivery and leave feedback.'],points:['Solves immediate first-day survival needs.','Improves comfort after arrival.','Makes the platform useful beyond transport and stay.']},
+      {id:'sim',title:'SIM Setup',icon:'📱',iconClass:'g4',label:'Connectivity',desc:'Get local connectivity and support with plan selection, ID verification, and activation.',steps:['Choose a provider based on budget and data needs.','Upload or prepare required identification.','Book helper support or a setup appointment.','Activate the SIM and start using the service.'],points:['Critical for communication, maps, and daily onboarding.','Useful when users are unfamiliar with local telecom processes.','Adds practical value right after arrival.']},
+      {id:'bank',title:'Bank & Medicare Help',icon:'🏦',iconClass:'g5',label:'Onboarding',desc:'Receive support for key registrations and understand the required documents clearly.',steps:['Choose the required registration support.','See a clear checklist of documents.','Book a suitable helper for guided assistance.','Complete the registration with better clarity.'],points:['Reduces confusion around formal processes.','Makes the app useful beyond just one-day services.','Strengthens the platform as a settlement assistant, not just a transport app.']},
+      {id:'orientation',title:'City Orientation',icon:'🗺️',iconClass:'g6',label:'Local Guide',desc:'Understand nearby stores, transport cards, routes, and everyday basics in a new city.',steps:['Choose your area and main needs.','Match with a local guide who speaks your language.','Explore transport, food, and important places.','Save useful local information for later use.'],points:['Supports cultural and local adjustment.','Gives confidence to users who arrive alone.','Makes the ecosystem feel human and supportive.']},
+      {id:'parcel',title:'Parcel Carry Support',icon:'📦',iconClass:'g7',label:'Add-on',desc:'Allows verified users to carry light declared parcels through a controlled flow.',steps:['Request or offer parcel carry support.','Declare item details and review compliance.','Admin or system checks the request.','Complete handover with confirmation.'],points:['Extends the ecosystem into trust-based logistics.','Adds innovation beyond standard newcomer services.','Requires strong trust and verification controls.']},
+      {id:'wallet',title:'Wallet, Refunds & Disputes',icon:'💳',iconClass:'g8',label:'Payment',desc:'Handle payment protection, completion release, refunds, and service disputes.',steps:['Capture payment at booking stage.','Hold funds during active service.','Release payment after completion confirmation.','Allow issue raising, review, and dispute handling.'],points:['Protects both user and helper.','Makes the platform operationally trustworthy.','Aligns the product with marketplace standards.']},
+      {id:'support',title:'Emergency & Support Layer',icon:'🚨',iconClass:'g9',label:'Safety',desc:'Provides support escalation, SOS access, and admin visibility during live tasks.',steps:['User triggers support or SOS from active booking.','System sends booking and location context.','Admin reviews and responds to the issue.','User receives guidance or intervention support.'],points:['Essential for in-person service safety.','Shows that the platform is serious about risk management.','Increases acceptance for first-time and vulnerable users.']}
+    ];
+
+    const features = [
+      {title:'User Registration & Role Selection',desc:'Supports newcomer, helper, and admin journeys with clear platform entry.',steps:['Choose language and role.','Sign up or log in.','Complete profile setup.','Enter the relevant dashboard.'],points:['Creates a clean first impression.','Prepares role-based flows from the beginning.','Makes the product easier to understand.']},
+      {title:'Helper Verification',desc:'Trust is built through document checks, identity review, and visible platform badges.',steps:['Upload ID and supporting documents.','Admin verifies submitted information.','Trusted badge is applied to approved helpers.','Profile becomes bookable.'],points:['Improves safety and trust.','Helps users compare helpers with confidence.','Makes the ecosystem more professional.']},
+      {title:'Live Tracking',desc:'Users can follow service progress through location and status updates.',steps:['Booking becomes active.','Helper location is shared.','User receives ETA and notifications.','Completion is confirmed in-app.'],points:['Reduces anxiety.','Makes the service feel active and transparent.','Improves support response during issues.']},
+      {title:'In-App Chat',desc:'Communication between user and helper stays inside the platform.',steps:['Open booking chat.','Ask questions or clarify meeting details.','Keep communication attached to the booking.','Escalate to support if needed.'],points:['Reduces confusion.','Keeps the experience organised.','Helps during coordination and delays.']},
+      {title:'Ratings & Reviews',desc:'Both trust and quality improve through feedback after completion.',steps:['Task is completed.','User leaves rating and review.','Helper reputation is updated.','Future matching benefits from the data.'],points:['Supports accountability.','Improves service quality over time.','Helps users choose better helpers.']},
+      {title:'Admin Moderation',desc:'A back-office layer keeps the ecosystem safe and controlled.',steps:['Monitor tasks and users.','Review verification status.','Manage complaints and refunds.','Track platform performance.'],points:['Necessary for scale.','Strengthens safety and fairness.','Shows stakeholder readiness.']}
+    ];
+
+    const serviceGrid = document.getElementById('service-grid');
+    const selectedLabel = document.getElementById('selected-service');
+    let activeService = 'pickup';
+
+    function renderServices(){
+      serviceGrid.innerHTML = services.map(s => `
+        <div class="service-card ${s.id===activeService?'active':''}" data-type="service" data-id="${s.id}">
+          <div class="service-top">
+            <div class="service-icon ${s.iconClass}">${s.icon}</div>
+            <div class="mini-label">${s.label}</div>
+          </div>
+          <h4>${s.title}</h4>
+          <p>${s.desc}</p>
+        </div>`).join('');
+      selectedLabel.textContent = services.find(s => s.id===activeService).title;
+      document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('click', () => {
+          activeService = card.dataset.id;
+          renderServices();
+          openDetail('service', activeService);
+        });
+      });
+    }
+
+    const featureList = document.getElementById('feature-list');
+    featureList.innerHTML = features.map((f,i)=>`
+      <div class="feature-row">
+        <div>
+          <strong>${f.title}</strong>
+          <span>${f.desc}</span>
+        </div>
+        <button class="open-btn" data-type="feature" data-id="${i}">Open Flow</button>
+      </div>`).join('');
+
+    const modal = document.getElementById('detail-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalSteps = document.getElementById('modal-steps');
+    const modalPoints = document.getElementById('modal-points');
+    function openDetail(type,id){
+      const item = type==='service' ? services.find(s=>s.id===id) : features[Number(id)];
+      modalTitle.textContent = item.title;
+      modalDesc.textContent = item.desc;
+      modalSteps.innerHTML = item.steps.map((s,i)=>`<div class="step"><div class="step-num">${i+1}</div><div>${s}</div></div>`).join('');
+      modalPoints.innerHTML = item.points.map(p=>`<li>${p}</li>`).join('');
+      modal.classList.add('show');
+    }
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.open-btn');
+      if(btn) openDetail(btn.dataset.type, btn.dataset.id);
+      if(e.target.id==='close-modal' || e.target===modal) modal.classList.remove('show');
+    });
+
+    renderServices();
+
+    const screenData = {
+      welcome:{title:'Welcome / Entry',note:'A clear first step where the platform explains what it does and lets users choose their role.'},
+      dashboard:{title:'Dashboard',note:'The dashboard prioritises the most urgent settlement needs first.'},
+      booking:{title:'Booking & Helper Match',note:'The booking screen shows what the user enters and how trusted helpers are matched.'},
+      tracking:{title:'Live Tracking',note:'The product feels operational here through ETA, support access, and live updates.'},
+      wallet:{title:'Wallet & Completion',note:'This screen clearly explains how the platform handles protected payment closure.'},
+      helper:{title:'Helper Journey',note:'This view explains how helpers enter, work, and earn inside the ecosystem.'},
+      admin:{title:'Admin Control',note:'This screen shows the operational layer that keeps the platform safe and manageable.'}
+    };
+    const screens = ['welcome','dashboard','booking','tracking','wallet','helper','admin'];
+    const tabs = document.getElementById('screen-tabs');
+    tabs.innerHTML = screens.map((id,idx)=>`<button class="open-btn ${idx===0?'active':''}" style="background:${idx===0?'var(--text)':'#fff'};color:${idx===0?'#fff':'var(--text)'};border:${idx===0?'none':'1px solid var(--border)'}" data-screen="${id}">${screenData[id].title}</button>`).join('');
+    const sideTitle = document.getElementById('screen-title-side');
+    const sideNote = document.getElementById('screen-note-side');
+    function activateScreen(id){
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-'+id).classList.add('active');
+      sideTitle.textContent = screenData[id].title;
+      sideNote.textContent = screenData[id].note;
+      tabs.querySelectorAll('button').forEach(btn=>{
+        const active = btn.dataset.screen===id;
+        btn.style.background = active ? 'var(--text)' : '#fff';
+        btn.style.color = active ? '#fff' : 'var(--text)';
+        btn.style.border = active ? 'none' : '1px solid var(--border)';
+      });
+    }
+    tabs.addEventListener('click',e=>{
+      const btn = e.target.closest('button[data-screen]');
+      if(btn) activateScreen(btn.dataset.screen);
+    });
+    activateScreen('welcome');
+
+    document.querySelectorAll('.nav-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+  </script>
+</body>
+</html>
